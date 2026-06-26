@@ -4,30 +4,35 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
-public class HuggingFaceService {
+public class GroqService {
 
     private final WebClient webClient;
 
-    @Value("${huggingface.api.url}")
+    @Value("${groq.api.url}")
     private String apiUrl;
 
-    @Value("${huggingface.api.key}")
+    @Value("${groq.api.key}")
     private String apiKey;
 
-    public HuggingFaceService(WebClient.Builder webClientBuilder) {
+    @Value("${groq.api.model:llama3-8b-8192}")
+    private String model;
+
+    public GroqService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
     }
 
-    public String getAnswer(String question) {
+    public String getAnswer(String prompt) {
         Map<String, Object> requestBody = Map.of(
-                "inputs", question,
-                "parameters", Map.of(
-                        "max_new_tokens", 1024,
-                        "return_full_text", false
-                )
+                "model", model,
+                "messages", List.of(
+                        Map.of("role", "user", "content", prompt)
+                ),
+                "temperature", 0.7,
+                "max_tokens", 1024
         );
 
         return webClient.post()

@@ -29,7 +29,8 @@ rabbitmq:
     key: activity.tracking
 
 
-huggingface:
+groq:
   api:
-    url: "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
-    key: "${HUGGINGFACE_API_KEY:YOUR_HUGGINGFACE_TOKEN_HERE}"
+    url: "https://api.groq.com/openai/v1/chat/completions"
+    key: "${GROQ_API_KEY:YOUR_GROQ_API_KEY_HERE}"
+    model: "llama3-8b-8192"

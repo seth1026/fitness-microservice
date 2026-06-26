@@ -197,7 +197,7 @@ services:
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASSWORD: guest
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
-      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY:-YOUR_HUGGINGFACE_TOKEN_HERE}
+      GROQ_API_KEY: ${GROQ_API_KEY:-YOUR_GROQ_API_KEY_HERE}
     depends_on:
       mongodb:
         condition: service_healthy

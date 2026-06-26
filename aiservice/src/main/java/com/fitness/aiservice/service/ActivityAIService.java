@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class ActivityAIService {
-    private final HuggingFaceService aiService;
+    private final GroqService aiService;
 
     public Recommendation generateRecommendation(Activity activity) {
         try {
@@ -37,15 +37,17 @@ public class ActivityAIService {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(aiResponse);
 
-            JsonNode textNode;
-            if (rootNode.isArray() && rootNode.size() > 0) {
-                textNode = rootNode.get(0).path("generated_text");
-            } else {
-                textNode = rootNode.path("generated_text");
-            }
+            // Groq returns OpenAI-compatible format: choices[0].message.content
+            String rawContent = rootNode
+                    .path("choices")
+                    .get(0)
+                    .path("message")
+                    .path("content")
+                    .asText()
+                    .trim();
 
-            String jsonContent = textNode.asText().trim();
-            // Remove markdown code blocks if the AI still includes them
+            // Strip markdown code fences if the model wraps JSON in them
+            String jsonContent = rawContent;
             if (jsonContent.startsWith("```json")) {
                 jsonContent = jsonContent.substring(7);
             } else if (jsonContent.startsWith("```")) {
