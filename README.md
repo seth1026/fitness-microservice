@@ -1,4 +1,4 @@
-<![CDATA[<div align="center">
+<div align="center">
 
 # 🏋️ FitTrack — AI-Powered Fitness Microservices Platform
 
@@ -185,6 +185,7 @@ cd activityservice
 ### Step 6 — AI Service
 
 > Configure your LLM provider in `configserver/src/main/resources/config/ai-service.yml` before starting.
+> Set your API token in the `huggingface.api.key` field (or configure Ollama for local inference).
 
 ```bash
 cd aiservice
@@ -284,4 +285,3 @@ Frontend → GET /api/recommendations/activity/{id}
 <div align="center">
   <p>Built with ☕ Java, ⚛️ React, and a lot of debugging.</p>
 </div>
-]]>
