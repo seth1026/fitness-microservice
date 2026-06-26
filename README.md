@@ -148,7 +148,47 @@ Ensure the following are installed and running before starting:
 
 ---
 
-## 🚀 Getting Started
+## 🐳 Docker Compose (Recommended)
+
+Run the **entire stack** — all services + infrastructure — with a single command.
+
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
+
+### Setup
+```bash
+# 1. Copy the environment file and add your Hugging Face token
+cp .env.example .env
+# Edit .env and set HUGGINGFACE_API_KEY=hf_your_token_here
+
+# 2. Build and start all containers
+docker compose up --build
+
+# 3. Check all containers are healthy
+docker compose ps
+```
+
+| Service | URL |
+|---|---|
+| React Frontend | http://localhost:3000 |
+| API Gateway | http://localhost:8080 |
+| Eureka Dashboard | http://localhost:8761 |
+| RabbitMQ Management | http://localhost:15672 |
+| Keycloak Admin | http://localhost:8181 |
+
+> **Note on Keycloak**: After first boot, open the Keycloak Admin UI at `http://localhost:8181` (admin/admin) and recreate your realm and client configuration.
+
+```bash
+# Stop all containers
+docker compose down
+
+# Stop and remove all data volumes (full reset)
+docker compose down -v
+```
+
+---
+
+## 🚀 Getting Started (Local Development)
 
 Start each service **in order**. Each service depends on the ones before it.
 
