@@ -235,8 +235,16 @@ services:
       - fitness-network
 
   # ─────────────────────────────────────────────
-  # OBSERVABILITY — PLG Stack
+  # OBSERVABILITY — PLG Stack & Zipkin
   # ─────────────────────────────────────────────
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: fitness-zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - fitness-network
 
   loki:
     image: grafana/loki:3.0.0
