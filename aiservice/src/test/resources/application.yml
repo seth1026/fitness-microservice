@@ -1,6 +1,9 @@
 spring:
   config:
-    import: ""
+    import: "optional:configserver:"
+  cloud:
+    config:
+      enabled: false
   application:
     name: ai-service-test
   rabbitmq:

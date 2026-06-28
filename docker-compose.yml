@@ -87,6 +87,8 @@ services:
     container_name: fitness-eureka
     ports:
       - "8761:8761"
+    labels:
+      logging: "promtail"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8761/actuator/health"]
       interval: 20s
@@ -103,6 +105,8 @@ services:
     container_name: fitness-configserver
     ports:
       - "8888:8888"
+    labels:
+      logging: "promtail"
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
     depends_on:
@@ -124,6 +128,8 @@ services:
     container_name: fitness-gateway
     ports:
       - "8080:8080"
+    labels:
+      logging: "promtail"
     environment:
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
@@ -143,6 +149,8 @@ services:
     container_name: fitness-userservice
     ports:
       - "8081:8081"
+    labels:
+      logging: "promtail"
     environment:
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8888
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fitness_user_db
@@ -164,6 +172,8 @@ services:
     container_name: fitness-activityservice
     ports:
       - "8082:8082"
+    labels:
+      logging: "promtail"
     environment:
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8888
       SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/fitnessactivity
@@ -189,6 +199,8 @@ services:
     container_name: fitness-aiservice
     ports:
       - "8083:8083"
+    labels:
+      logging: "promtail"
     environment:
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8888
       SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/fitnessrecommendations
@@ -215,8 +227,56 @@ services:
     container_name: fitness-frontend
     ports:
       - "3000:80"
+    labels:
+      logging: "promtail"
     depends_on:
       - gateway
+    networks:
+      - fitness-network
+
+  # ─────────────────────────────────────────────
+  # OBSERVABILITY — PLG Stack
+  # ─────────────────────────────────────────────
+
+  loki:
+    image: grafana/loki:3.0.0
+    container_name: fitness-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki-config.yml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - fitness-network
+
+  promtail:
+    image: grafana/promtail:3.0.0
+    container_name: fitness-promtail
+    volumes:
+      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - fitness-network
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    container_name: fitness-grafana
+    ports:
+      - "4000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - loki
     networks:
       - fitness-network
 
@@ -228,6 +288,8 @@ volumes:
   postgres-data:
   mongo-data:
   rabbitmq-data:
+  loki-data:
+  grafana-data:
 
 networks:
   fitness-network:
