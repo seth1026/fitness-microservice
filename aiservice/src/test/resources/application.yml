@@ -1,0 +1,26 @@
+spring:
+  config:
+    import: ""
+  application:
+    name: ai-service-test
+  rabbitmq:
+    host: localhost
+    port: 5672
+
+rabbitmq:
+  exchange:
+    name: fitness-exchange
+  queue:
+    name: activity.queue
+  routing:
+    key: activity.tracking
+
+groq:
+  api:
+    url: "https://api.groq.com/openai/v1/chat/completions"
+    key: "test-key"
+    model: "llama3-8b-8192"
+
+eureka:
+  client:
+    enabled: false
